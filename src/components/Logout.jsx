@@ -3,26 +3,34 @@
 import { useEffect, useState } from "react";
 import { useUser } from "../contexts/UserProvider";
 import { Navigate } from "react-router-dom";
-import Login from "./Login";
 
 export default function Logout() {
 
   const [isLoading, setIsLoading] = useState(true);
   const { logout } = useUser();
 
-  async function onLogout() {
-    await logout();
-    setIsLoading(false);
-  }
-
-  useEffect(()=>{
-    onLogout();
-  },[]);
+  useEffect(() => {
+    let mounted = true;
+    logout().finally(() => {
+      if (mounted) {
+        setIsLoading(false);
+      }
+    });
+    return () => {
+      mounted = false;
+    };
+  }, [logout]);
 
   if (isLoading) {
-    return (<><h3>Loging out...</h3></>);
+    return (
+      <div className="page-shell auth-shell">
+        <div className="card logout-box">
+          <h3><span className="pulse" />Logging out...</h3>
+        </div>
+      </div>
+    );
   }
   else {
-    return (<Navigate to={<Login/>} replace/>)
+    return (<Navigate to="/login" replace/>)
   }
 }

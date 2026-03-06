@@ -30,7 +30,7 @@ export default function Login() {
 
     const result = await login(email, pass);
 
-    setControlState((prev) => {
+    setControlState(() => {
       return {
         isLoggingIn: false,
         isLoginError: !result,
@@ -41,26 +41,43 @@ export default function Login() {
 
   if (!user.isLoggedIn)
     return (
-      <div>
-        <table>
-          <tbody>
-            <tr>
-              <th>Email</th>
-              <td><input type="text" name="email" id="email" ref={emailRef}/> </td>
-            </tr>
-            <tr>
-              <th>Password</th>
-              <td><input type="password" name="password" id="password" ref={passRef}/> </td>
-            </tr>
-          </tbody>
-        </table>
-        <button onClick={onLogin} disabled={controlState.isLoggingIn}>Login</button>
-        {controlState.isLoginError && <div>Login incorrect</div>}
-        {user.isLoggedIn && <div>Login Success</div>}
+      <div className="page-shell auth-shell">
+        <div className="page-header">
+          <h1>Library Management</h1>
+          <p>Sign in to access books and borrowing services.</p>
+        </div>
+
+        <div className="card auth-card">
+          <div className="grid-2">
+            <label htmlFor="email">
+              Email
+              <input type="text" name="email" id="email" ref={emailRef} />
+            </label>
+            <label htmlFor="password">
+              Password
+              <input type="password" name="password" id="password" ref={passRef} />
+            </label>
+          </div>
+
+          <div className="inline-actions">
+            <button onClick={onLogin} disabled={controlState.isLoggingIn}>
+              {controlState.isLoggingIn ? "Signing in..." : "Login"}
+            </button>
+          </div>
+
+          {controlState.isLoginError && <div className="message error">Login incorrect</div>}
+          {user.isLoggedIn && <div className="message">Login success</div>}
+
+          <div className="auth-credentials">
+            <div>Admin: admin@test.com / admin123</div>
+            <div>User: user@test.com / user123</div>
+          </div>
+          <div className="helper">Use these accounts for exam testing.</div>
+        </div>
       </div>
     );
   else
     return (
-      <Navigate to="/profile" replace />
+      <Navigate to="/books" replace />
     );
 }
