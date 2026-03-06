@@ -199,6 +199,14 @@ button:disabled {
   color: #8c5318;
 }
 
+.field-error {
+  display: block;
+  margin-top: 0.36rem;
+  color: var(--danger);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
 .loading {
   color: var(--text-soft);
   font-weight: 600;

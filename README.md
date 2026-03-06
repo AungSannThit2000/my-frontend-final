@@ -1,17 +1,101 @@
-# React + Vite
+# Library Management System Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Frontend application for the CSX4107/ITX4107 Web Application Development final exam.
 
-Currently, two official plugins are available:
+Built with:
+- React
+- React Router
+- Vite
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Features
 
-## React Compiler
+- Login/logout flow with backend cookie-based authentication
+- Role-aware UI (`ADMIN`, `USER`)
+- Book pages:
+  - List books
+  - Search by title and author
+  - View book detail
+  - ADMIN-only create/update/delete actions
+- Borrow pages:
+  - USER can create borrow request
+  - USER can cancel own request
+  - ADMIN can update request status
+- Modern responsive UI theme for desktop and mobile
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Test Accounts
 
-## Expanding the ESLint configuration
+Use backend-provided exam accounts:
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-# my-frontend-final
+| Role | Email | Password |
+|---|---|---|
+| ADMIN | `admin@test.com` | `admin123` |
+| USER | `user@test.com` | `user123` |
+
+## Environment Variables
+
+Create `.env` in this frontend folder:
+
+```env
+VITE_API_URL=http://localhost:3000
+```
+
+If your backend runs on another host/port, update this URL accordingly.
+
+## Getting Started
+
+```bash
+npm install
+npm run dev
+```
+
+Default URL:
+- `http://localhost:5173`
+
+## Routes
+
+- `/login` - Login page
+- `/logout` - Logout flow
+- `/books` - Book listing and create form (admin only for create)
+- `/books/:id` - Book detail page (admin can update/delete)
+- `/borrow` - Borrow request page and request list
+
+## Role-Based UI Behavior
+
+- ADMIN:
+  - Can create/update/delete books
+  - Can view and update all borrow requests
+- USER:
+  - Can view books and details
+  - Can create borrow requests
+  - Can cancel own request
+
+## Scripts
+
+- `npm run dev` - Start Vite dev server
+- `npm run build` - Create production build
+- `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+
+## Project Structure
+
+```text
+src/
+  components/
+    Login.jsx
+    Logout.jsx
+    Books.jsx
+    BookDetail.jsx
+    BookBorrow.jsx
+  contexts/
+    UserContext.jsx
+    UserProvider.jsx
+  middleware/
+    RequireAuth.jsx
+  App.jsx
+```
+
+## Notes
+
+- Frontend stores minimal session state in `localStorage` for route protection.
+- Actual API authorization is still enforced by backend JWT validation.
+- If UI seems logged in unexpectedly, use `/logout` or clear `localStorage` + cookies.

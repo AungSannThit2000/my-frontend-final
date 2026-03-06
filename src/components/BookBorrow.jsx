@@ -19,6 +19,8 @@ export default function BookBorrow () {
   const [requests, setRequests] = useState([]);
   const [targetDate, setTargetDate] = useState("");
   const [bookId, setBookId] = useState("");
+  const [dateError, setDateError] = useState("");
+  const [bookError, setBookError] = useState("");
   const [message, setMessage] = useState("");
 
   async function loadRequests() {
@@ -75,8 +77,23 @@ export default function BookBorrow () {
   }, [isAdmin]);
 
   async function onCreateRequest() {
+    let hasError = false;
+
     if (!targetDate) {
-      setMessage("Please choose target date");
+      setDateError("You must select date to submit request");
+      hasError = true;
+    } else {
+      setDateError("");
+    }
+
+    if (!bookId) {
+      setBookError("You must select book to submit request");
+      hasError = true;
+    } else {
+      setBookError("");
+    }
+
+    if (hasError) {
       return;
     }
 
@@ -100,6 +117,8 @@ export default function BookBorrow () {
 
     setTargetDate("");
     setBookId("");
+    setDateError("");
+    setBookError("");
     setMessage("Request submitted. Waiting for admin review.");
     await loadRequests();
   }
@@ -174,19 +193,35 @@ export default function BookBorrow () {
                 id="target-date"
                 type="date"
                 value={targetDate}
-                onChange={(event) => setTargetDate(event.target.value)}
+                onChange={(event) => {
+                  setTargetDate(event.target.value);
+                  if (dateError) {
+                    setDateError("");
+                  }
+                }}
               />
+              {dateError && <span className="field-error">{dateError}</span>}
             </label>
             <label htmlFor="select-book">
               Book
-              <select id="select-book" value={bookId} onChange={(event) => setBookId(event.target.value)}>
-                <option value="">Select Book (Optional)</option>
+              <select
+                id="select-book"
+                value={bookId}
+                onChange={(event) => {
+                  setBookId(event.target.value);
+                  if (bookError) {
+                    setBookError("");
+                  }
+                }}
+              >
+                <option value="">Select Book (Required)</option>
                 {books.map((book) => (
                   <option key={book._id} value={book._id}>
                     {book.title} ({book.author})
                   </option>
                 ))}
               </select>
+              {bookError && <span className="field-error">{bookError}</span>}
             </label>
           </div>
           <div className="inline-actions">
