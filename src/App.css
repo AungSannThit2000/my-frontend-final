@@ -207,6 +207,21 @@ button:disabled {
   font-weight: 700;
 }
 
+.toast-success {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  padding: 0.68rem 0.9rem;
+  border-radius: 12px;
+  border: 1px solid #8ad6c9;
+  background: #e9fbf6;
+  color: #145048;
+  box-shadow: 0 14px 26px rgba(20, 80, 72, 0.18);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
 .loading {
   color: var(--text-soft);
   font-weight: 600;

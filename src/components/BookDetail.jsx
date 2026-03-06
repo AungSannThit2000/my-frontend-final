@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useUser } from "../contexts/UserProvider";
 
 const API_URL = import.meta.env.VITE_API_URL;
@@ -7,7 +7,6 @@ const API_URL = import.meta.env.VITE_API_URL;
 export function BookDetail () {
   //TODO: Implement your Book management in detail here, i.e. Update or Delete
   const { id } = useParams();
-  const navigate = useNavigate();
   const { user } = useUser();
   const isAdmin = user.role === "ADMIN";
 
@@ -19,7 +18,13 @@ export function BookDetail () {
     location: "",
   });
   const [message, setMessage] = useState("");
+  const [toast, setToast] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+
+  function showSuccessToast(text) {
+    setToast(text);
+    setTimeout(() => setToast(""), 2200);
+  }
 
   const loadBook = useCallback(async (shouldSetLoading = true) => {
     if (shouldSetLoading) {
@@ -109,8 +114,9 @@ export function BookDetail () {
       setMessage(error.message || "Cannot update book");
       return;
     }
-    setMessage("Book updated");
     await loadBook();
+    setMessage("Book updated successfully.");
+    showSuccessToast("Book updated successfully.");
   }
 
   async function onDelete() {
@@ -124,12 +130,36 @@ export function BookDetail () {
       setMessage(error.message || "Cannot delete book");
       return;
     }
+    await loadBook();
+    setMessage("Book soft deleted successfully.");
+    showSuccessToast("Book soft deleted successfully.");
+  }
 
-    navigate("/books");
+  async function onRestore() {
+    const response = await fetch(`${API_URL}/api/book/${id}`, {
+      method: "PATCH",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        status: "ACTIVE",
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({}));
+      setMessage(error.message || "Cannot restore book");
+      return;
+    }
+    await loadBook();
+    setMessage("Book restored successfully.");
+    showSuccessToast("Book restored successfully.");
   }
 
   return (
     <div className="page-shell">
+      {toast && <div className="toast-success">{toast}</div>}
       <div className="page-header">
         <h2>Book Detail</h2>
         <p>Inspect and manage this book record.</p>
@@ -214,8 +244,17 @@ export function BookDetail () {
 
           {isAdmin && (
             <div className="inline-actions">
-              <button onClick={onUpdate}>Update</button>{" "}
-              <button className="btn-danger" onClick={onDelete}>Soft Delete</button>
+              {book?.status === "DELETED" ? (
+                <>
+                  <button onClick={onUpdate}>Update</button>
+                  <button className="btn-ghost" onClick={onRestore}>Restore</button>
+                </>
+              ) : (
+                <>
+                  <button onClick={onUpdate}>Update</button>{" "}
+                  <button className="btn-danger" onClick={onDelete}>Soft Delete</button>
+                </>
+              )}
             </div>
           )}
           {message && (
